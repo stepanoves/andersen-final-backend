@@ -20,10 +20,10 @@ class PostRepository extends AbstractRepository {
         }
     }
 
-    async remove(postID, userID) {
-        const post = await Post.findById(postID);
-        if (userID === post.userId) {
-            return await super.remove(postID);
+    async remove(postUser) {
+        const post = await super.findOne(postUser.postID);
+        if (postUser.userID == post.userId) {
+            return await super.remove(postUser.postID);
         } else {
             throw ("This user can't delete post in this post");
         }

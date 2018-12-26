@@ -9,6 +9,10 @@ class PostController extends AbstractController{
     async findAll(groupID) {
         return await postRepository.findAll(groupID);
     }
+
+    // async remove(postUser) {
+    //     return await postRepository.remove(postID, userID);
+    // }
 }
 
 exports.postController = new PostController();

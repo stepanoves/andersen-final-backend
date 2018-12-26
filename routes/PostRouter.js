@@ -32,15 +32,14 @@ class PostRouter {
             }
         });
 
-        this.__router.delete('/:idPost/:idUser', async(req, res) => {
-            const {idPost} = req.params;
-            const {idUser} = req.params;
+        this.__router.delete('/', async(req, res) => {
+            const {body} = req;
             try {
-                await postController.remove(idPost, idUser);
+                await postController.remove(body);
                 res.status(200).end();
             } catch (err) {
                 res.status(409).end();
-                res.text(err.message)
+
             }
 
         });
