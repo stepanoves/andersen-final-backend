@@ -25,7 +25,7 @@ db.group = require('./models/Group.model')(sequelize, Sequelize);
 db.post = require('./models/Post.model')(sequelize, Sequelize);
 db.groupsUsers = require('./models/GroupsUsers.model')(sequelize, Sequelize);
 
-db.user.belongsTo(db.userInfo);
+db.userInfo.belongsTo(db.user);
 db.user.hasMany(db.group);
 db.user.hasMany(db.post);
 db.group.hasMany(db.post);
