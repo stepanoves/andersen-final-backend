@@ -15,6 +15,7 @@ class PostRouter {
 
 
         this.__router.get('/group/:id', async(req, res) => {
+            if (!req.session.email) res.status(409).end();
             const {id} = req.params;
             console.log(id);
             res.json(
@@ -23,6 +24,7 @@ class PostRouter {
         });
 
         this.__router.post('/', async (req, res) => {
+            if (!req.session.email) res.status(409).end();
             const {body} = req;
             try {
                 await postController.create(body);
@@ -33,6 +35,7 @@ class PostRouter {
         });
 
         this.__router.delete('/', async(req, res) => {
+            if (!req.session.email) res.status(409).end();
             const {body} = req;
             try {
                 await postController.remove(body);

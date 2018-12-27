@@ -21,6 +21,9 @@ class UserRouter {
 
         this.__router.get('/:id', async(req, res) => {
             const {id} = req.params;
+            const user = await userController.findOne(id);
+            if (!req.session.email) res.status(409).end();
+            if(user.email !== req.session.email) res.status(409).end();
             res.json(
                 await userController.findOne(id)
             )
@@ -46,9 +49,19 @@ class UserRouter {
 
         this.__router.put('/:id', async(req, res) => {
             const {id} = req.params;
-            const {body} = req;
-            await userController.update(id, {email: body.email, password: body.password});
-            res.status(200).end();
+            const user = await userController.findOne(id);
+            if (!req.session.email) res.status(409).end();
+            if(user.email !== req.session.email) res.status(409).end();
+
+            try {
+                const {body} = req;
+                await userController.update(id, {email: body.email, password: body.password});
+                req.session.email = user.email;
+                res.status(200).end();
+            } catch (error) {
+                res.status(409).end();
+            }
+
         });
     }
 }

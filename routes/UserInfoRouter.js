@@ -1,5 +1,6 @@
 const {Router} = require('express');
 const {userInfoController} = require('../controllers/UserInfoController');
+const {userController} = require('../controllers/UserController');
 
 class UserInfoRouter {
     constructor() {
@@ -21,14 +22,27 @@ class UserInfoRouter {
 
         this.__router.get('/:id', async(req, res) => {
             const {id} = req.params;
-            res.json(
-                await userInfoController.findOne(id)
-            )
+            const user = await userController.findOne(id);
+            if (!req.session.email) res.status(409).end();
+            if(user.email !== req.session.email) res.status(409).end();
+            try {
+                res.json(
+                    await userInfoController.findOne(id)
+                )
+            } catch (error) {
+                res.status(200).end();
+            }
+
         });
 
         this.__router.post('/', async (req, res) => {
             const {body} = req;
+
             try {
+                if (!req.session.email) res.status(409).end();
+
+                const user = await userController.findOne(body.userId);
+                if (user.email !== req.session.email) res.status(409).end();
                 await userInfoController.create(body);
                 res.status(201).end();
             } catch (err) {
@@ -44,11 +58,19 @@ class UserInfoRouter {
 
         this.__router.put('/:id', async(req, res) => {
             const {id} = req.params;
+            const user = await userController.findOne(id);
+            if (!req.session.email) res.status(409).end();
+            if(user.email !== req.session.email) res.status(409).end();
             const {body} = req;
-            const info = {name: body.name, surname: body.surname, specialization: body.specialization,
-                        position: body.position, resumeLink: body.resumeLink };
-            await userInfoController.update(id, info);
-            res.status(200).end();
+            try {
+                const info = {name: body.name, surname: body.surname, specialization: body.specialization,
+                    position: body.position, resumeLink: body.resumeLink };
+                await userInfoController.update(id, info);
+                res.status(200).end();
+            } catch (error) {
+                res.status(409).end();
+            }
+
         });
     }
 }
