@@ -23,13 +23,24 @@ class GroupRepository extends AbstractRepository {
         )
     }
 
+    async isExist(groupId, userId) {
+        const grUserParticipant = await GroupUsers.findOne(
+            {where: {groupId: groupId, userId: userId}}
+        );
+        const grUserMain = await Group.findOne(
+            {where: {id: groupId, userId: userId}}
+        )
+
+        return {participant: !!grUserParticipant, main: !!grUserMain};
+    }
+
     async createParticipant(groupUser) {
         return await GroupUsers.create(groupUser);
     }
 
-    async removeParticipant(groupUser) {
+    async removeParticipant(groupId, userId) {
         return await GroupUsers.destroy(
-            {where: {groupId: groupUser.groupId, userId: groupUser.userId}}
+            {where: {groupId: groupId, userId: userId}}
         );
     }
 }

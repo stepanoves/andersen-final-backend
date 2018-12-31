@@ -1,5 +1,6 @@
 const {Router} = require('express');
 const {userController} = require('../controllers/UserController');
+const {validatePayloadMiddleware} = require('../middlewares/index');
 
 class AuthRouter {
     constructor() {
@@ -13,27 +14,37 @@ class AuthRouter {
 
     __configure() {
 
-        this.__router.post('/login', async (req, res) => {
+        this.__router.post('/login', validatePayloadMiddleware, async (req, res) => {
             const {body} = req;
             try {
                 const user = await userController.findByParametrs(body);
                 if (user.email === body.email && user.password === body.password) {
-                    req.session.email = body.email;
-                    res.send(`Login successful sessionID: ${req.session.id} user: ${req.session.email}`);
+                    req.session.userID = user.id;
+                    res.status(200).send({
+                        user: user.id
+                    });
+                } else {
+                    res.status(403).send({
+                        errorMessage: 'Permission denied!'
+                    });
                 }
             } catch (error){
                 res.status(409).end();
             }
         });
 
-        this.__router.get('/logout', async (req, res) => {
-            const {body} = req;
-            try {
-                req.session.email = '';
-                res.status(200).end();
-            } catch (error){
-                res.status(409).end();
-            }
+        this.__router.get('/login', (req, res) => {
+            req.session.userID ? res.status(200).send({loggedIn: true}) : res.status(200).send({loggedIn: false});
+        });
+
+        this.__router.post('/logout', (req, res) => {
+            req.session.destroy((err) => {
+                if (err) {
+                    res.status(500).send('Could not log out.');
+                } else {
+                    res.status(200).send({});
+                }
+            });
         });
 
     }

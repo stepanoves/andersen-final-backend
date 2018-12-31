@@ -2,6 +2,7 @@ const { AbstractRepository } = require('./AbstractRepository');
 const db = require('../db/dbORMConfig');
 const Post = db.post;
 const GroupUsers = db.groupsUsers;
+const Group = db.group;
 
 
 class PostRepository extends AbstractRepository {
@@ -10,14 +11,8 @@ class PostRepository extends AbstractRepository {
     }
 
     async create(post) {
-        const userGroup = await GroupUsers.findOne(
-            {where: {groupId: post.groupId, userId: post.userId}}
-        );
-        if (userGroup) {
             return await super.create(post);
-        } else {
-            throw ("This user can't create post in this group");
-        }
+
     }
 
     async remove(postUser) {

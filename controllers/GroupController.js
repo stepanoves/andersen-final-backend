@@ -14,8 +14,12 @@ class GroupController extends AbstractController{
         return await groupRepository.createParticipant(groupUser);
     }
 
-    async removeParticipant(groupUser) {
-        return await groupRepository.removeParticipant(groupUser);
+    async removeParticipant(groupId, userId) {
+        return await groupRepository.removeParticipant(groupId, userId);
+    }
+
+    async isExist(groupId, userId) {
+        return await groupRepository.isExist(groupId, userId);
     }
 
 
